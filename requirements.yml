@@ -1,0 +1,14 @@
+- role: ansiblebit.oracle-java
+  src: git@github.com:ansiblebit/oracle-java.git
+
+- role: ANXS.postgresql
+  src: github.com:ANXS/postgresql.git
+
+- role: jdauphant.nginx
+
+- src: git@github.com:freedomofpress/ansible-role-jira.git
+  version: develop
+  name: pantarei.jira
+
+- src: https://github.com/freedomofpress/ansible-role-openssl-node.git
+  name: freedomofpress.openssl_node

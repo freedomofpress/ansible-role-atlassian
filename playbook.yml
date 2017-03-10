@@ -1,0 +1,42 @@
+---
+- name: Install Jira
+  hosts: all
+  become: yes
+  roles:
+    - role: freedomofpress.openssl_node
+
+    - role: ANXS.postgresql
+      postgresql_users:
+        - name: jira_user
+          pass: jira_user
+      postgresql_databases:
+        - name: jira
+          owner: jira_user
+      postgreql_user_privileges:
+        - name: jira_user
+          db: jira
+          priv: "ALL"
+          role_attr_flags: "CREATEDB"
+      tag: postgres
+
+    - role: jdauphant.nginx
+      nginx_sites:
+        default:
+          - listen 80
+          - return 301 https://localhost:4443$request_uri
+        encrypted:
+          - listen 443 ssl
+          - location / { proxy_pass http://127.0.0.1:8080/; }
+          - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
+          - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
+
+    - role: pantarei.jira
+      jira_archive: atlassian-jira-software-7.3.2.tar.gz
+      jira_checksum: "sha256:590fd3c76373e487b9244e3127276f4c73d0a2df69507662242801ff9d6f46a3"
+      jira_hash_salt: 2A5VpF2Uza
+      jira_pass: "34thAromaCot555AlumAgave"
+      jira_user: jira
+      tags: jira
+
+    - role: ansible-role-jira
+      tags: jira-config

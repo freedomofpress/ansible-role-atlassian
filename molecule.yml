@@ -1,0 +1,24 @@
+---
+ansible:
+  verbose: vv
+  diff: no
+  config_file: ./ansible.cfg
+  host_key_checking: False
+
+vagrant:
+  platforms:
+    - name: jessie64
+      box: debian/jessie64
+
+  providers:
+    - name: libvirt
+      type: libvirt
+      options:
+        memory: 2048
+
+  instances:
+    - name: jiraserver
+      raw_config_args:
+        - "vm.synced_folder '.', '/vagrant', disabled: true"
+        - "vm.network 'forwarded_port', guest: 443, host: 4443"
+        - "vm.network 'forwarded_port', guest: 80, host: 8080"

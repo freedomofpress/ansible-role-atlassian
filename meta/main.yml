@@ -1,0 +1,27 @@
+galaxy_info:
+  author: Michael Sheinberg
+  description: Ansible jira installation role
+  company: Freedom of the Press Foundation
+
+  license: MIT
+
+  min_ansible_version: 1.2
+
+  #
+  # Below are all platforms currently available. Just uncomment
+  # the ones that apply to your role. If you don't see your
+  # platform on this list, let us know and we'll get it added!
+  #
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+
+  galaxy_tags:
+    - jira
+
+dependencies:
+  - role: ansiblebit.oracle-java
+    src: git@github.com:ansiblebit/oracle-java.git
+    oracle_java_set_as_default: yes
+    oracle_java_state: present
