@@ -12,3 +12,7 @@
 
 - src: https://github.com/freedomofpress/ansible-role-openssl-node.git
   name: freedomofpress.openssl_node
+
+- src: https://github.com/pantarei/ansible-role-confluence.git
+  name: pantarei.confluence
+  version: 453a43575cff5b53079dfb9ddacd355f2ab72aaf

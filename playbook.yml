@@ -9,12 +9,20 @@
       postgresql_users:
         - name: jira_user
           pass: jira_pass
+        - name: confluence_user
+          pass: confluence_pass
       postgresql_databases:
         - name: jira
           owner: jira_user
+        - name: confluence
+          owner: confluence_user
       postgreql_user_privileges:
         - name: jira_user
           db: jira
+          priv: "ALL"
+          role_attr_flags: "CREATEDB"
+        - name: confluence_user
+          db: confluence
           priv: "ALL"
           role_attr_flags: "CREATEDB"
       tag: postgres
@@ -29,6 +37,12 @@
           - location / { proxy_pass http://127.0.0.1:8080/; }
           - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
+        confluence:
+          - listen 4443 ssl
+          - location / { proxy_pass http://127.0.0.1:8090/; }
+          - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
+          - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
+          - client_max_body_size 50M
 
     - role: pantarei.jira
       jira_archive: atlassian-jira-software-7.3.2.tar.gz
@@ -39,6 +53,12 @@
       jira_resolve_upgrade_warning: true
       tags: jira
 
+    - role: pantarei.confluence
+      tags: confluence
+      confluence_hash_salt: RxlcMApu9lqPrdJ
+      confluence_pass: "RowGladeWhopShoeHitsBethel"
+      confluence_user: confluence
+
     - role: ansible-role-jira
       tags: jira-config
   post_tasks:
@@ -46,4 +66,5 @@
         msg: |
           Connect to
             * JIRA @ https://{{ ansible_default_ipv4.address }}
+            * Confluence @ https://{{ ansible_default_ipv4.address }}:4443
       tags: always

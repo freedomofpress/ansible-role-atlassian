@@ -20,3 +20,34 @@ jira_config_db_params:
     type: postgres72
     driver: "org.postgresql.Driver"
     url: postgresql
+
+
+# ---- Confluence ------
+#
+#
+atlassian_config_confluence: false
+confluence_home: "/var/lib/confluence"
+
+confluence_config_db_cfg: "{{confluence_home}}/confluence.cfg.xml"
+confluence_config_db_host: localhost
+confluence_config_db_port: 5432
+confluence_config_db_name: confluence
+confluence_config_db_user: confluence_user
+confluence_config_db_pass: confluence_pass
+confluence_config_db_type: postgres
+
+confluence_config_db_params:
+  postgres:
+    driver: org.postgresql.Driver
+    url: postgresql
+    isolation: 2
+
+# intermediate dict to config to xml values
+confluence_map_to_xml:
+  driver_class: "{{ confluence_config_db_params[confluence_config_db_type].driver }}"
+  isolation: "{{ confluence_config_db_params[confluence_config_db_type].isolation }}"
+  url: |
+    jdbc:{{confluence_config_db_params[confluence_config_db_type].url}}://{{confluence_config_db_host}}:{{confluence_config_db_port}}/{{confluence_config_db_name}}
+  username: "{{ confluence_config_db_user }}"
+  password: "{{ confluence_config_db_pass }}"
+notify: restart confluence

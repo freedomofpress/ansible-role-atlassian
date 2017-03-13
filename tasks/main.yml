@@ -4,3 +4,7 @@
   when: atlassian_config_jira
   tags: jira
 
+# This logic is work in-progress, still want to keep in for now though
+- include: confluence.yml
+  when: atlassian_config_confluence
+  tags: confluence

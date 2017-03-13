@@ -1,0 +1,46 @@
+---
+# Idempotency in the xml library isnt really there for adding child items. Have
+# to clear them out, add em back, and do file comparison. Kind of hacky :(
+- package:
+    name: python-lxml
+    state: present
+
+- name: Confluence needs to be started at least once for xml cfg file to be generated
+  service:
+    name: confluence
+    state: started
+
+- name: It might take a few seconds after start for config to appear for first time
+  wait_for:
+    path: "{{ confluence_config_db_cfg }}"
+
+- name: Get pre-change checksum for later comparison
+  stat:
+    path: "{{ confluence_config_db_cfg }}"
+  register: detect_file_prechange_result
+
+- name: Clear out existing entries
+  xml:
+    path: "{{ confluence_config_db_cfg }}"
+    xpath: /confluence-configuration/properties/property[@name='hibernate.connection.{{item.key}}']
+    ensure: absent
+  changed_when: false
+  with_dict: "{{ confluence_map_to_xml }}"
+
+- name: Clear out existing entries
+  xml:
+    path: "{{ confluence_config_db_cfg }}"
+    xpath: /confluence-configuration/properties
+    add_children:
+      - "<property name='hibernate.connection.{{item.key}}'>{{item.value}}</property>"
+    pretty_print: true
+    input_type: xml
+  with_dict: "{{ confluence_map_to_xml }}"
+  changed_when: false
+
+- name: Compare config checksum with earlier checksum
+  stat:
+    path: "{{ confluence_config_db_cfg }}"
+  register: detect_file_postchange_result
+  changed_when: 'detect_file_postchange_result.stat.checksum != detect_file_prechange_result.stat.checksum'
+  notify: restart confluence
