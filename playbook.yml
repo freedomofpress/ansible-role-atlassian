@@ -8,7 +8,7 @@
     - role: ANXS.postgresql
       postgresql_users:
         - name: jira_user
-          pass: jira_user
+          pass: jira_pass
       postgresql_databases:
         - name: jira
           owner: jira_user
@@ -36,7 +36,14 @@
       jira_hash_salt: 2A5VpF2Uza
       jira_pass: "34thAromaCot555AlumAgave"
       jira_user: jira
+      jira_resolve_upgrade_warning: true
       tags: jira
 
     - role: ansible-role-jira
       tags: jira-config
+  post_tasks:
+    - debug:
+        msg: |
+          Connect to
+            * JIRA @ https://{{ ansible_default_ipv4.address }}
+      tags: always

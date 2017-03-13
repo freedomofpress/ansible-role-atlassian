@@ -6,8 +6,8 @@
 
 - role: jdauphant.nginx
 
-- src: git@github.com:freedomofpress/ansible-role-jira.git
-  version: develop
+- src: https://github.com/freedomofpress/ansible-role-jira.git
+  version: ProdTweaks
   name: pantarei.jira
 
 - src: https://github.com/freedomofpress/ansible-role-openssl-node.git

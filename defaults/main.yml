@@ -1,4 +1,8 @@
 ---
+# ---- jira ------
+#
+#
+atlassian_config_jira: true
 jira_home: /var/lib/jira
 jira_user: jira
 jira_group: "{{ jira_user }}"
@@ -7,7 +11,7 @@ jira_config_db_host: localhost
 jira_config_db_port: 5432
 jira_config_db_name: jira
 jira_config_db_user: jira_user
-jira_config_db_pass: "{{ jira_config_db_user }}"
+jira_config_db_pass: jira_pass
 jira_config_db_type: postgres
 
 
