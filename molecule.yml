@@ -14,7 +14,7 @@ vagrant:
     - name: libvirt
       type: libvirt
       options:
-        memory: 2048
+        memory: 4096
 
   instances:
     - name: jiraserver
