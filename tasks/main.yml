@@ -6,5 +6,6 @@
 
 # This logic is work in-progress, still want to keep in for now though
 - include: confluence.yml
+  static: no
   when: atlassian_config_confluence
   tags: confluence
