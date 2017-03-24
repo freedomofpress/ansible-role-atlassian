@@ -1,7 +1,7 @@
 ---
 - name: Copy over json logging jar
   copy:
-    src: "{{ atlassian_config_json_jar }}"
+    src: "{{ item.jar }}"
     dest: "{{ item.jar_dir }}"
     owner: "{{ item.user }}"
     group: "{{ item.group }}"
@@ -11,10 +11,17 @@
       user: "{{ jira_user }}"
       group: "{{ jira_group }}"
       enable: "{{ jira_config_enable_json }}"
+      jar: "{{ atlassian_config_json_jar }}"
     - jar_dir: "{{ confluence_work }}/confluence/WEB-INF/lib/"
       user: "{{ confluence_user }}"
       group: "{{ confluence_group }}"
       enable: "{{ jira_config_enable_json }}"
+      jar: "{{ atlassian_config_json_jar }}"
+    - jar_dir: "{{ confluence_work }}/confluence/WEB-INF/lib/"
+      user: "{{ confluence_user }}"
+      group: "{{ confluence_group }}"
+      enable: "{{ jira_config_enable_json }}"
+      jar: "{{ atlassian_config_json_jar_dep }}"
 
 - name: Toggle on JSON logging in config - jira
   lineinfile:

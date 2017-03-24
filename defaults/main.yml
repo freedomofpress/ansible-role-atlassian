@@ -1,12 +1,21 @@
 ---
+# ---- general ------
+#
+#
+atlassian_config_json_jar: jsonevent-layout-1.8-SNAPSHOT.jar
+atlassian_config_json_jar_dep: json-smart-1.1.1.jar
+
 # ---- jira ------
 #
 #
 atlassian_config_jira: true
 jira_home: /var/lib/jira
+jira_work: /usr/share/jira
 jira_user: jira
 jira_group: "{{ jira_user }}"
 
+
+jira_config_enable_json: true
 jira_config_db_host: localhost
 jira_config_db_port: 5432
 jira_config_db_name: jira
@@ -27,7 +36,11 @@ jira_config_db_params:
 #
 atlassian_config_confluence: false
 confluence_home: "/var/lib/confluence"
+confluence_work: /usr/share/confluence
+confluence_user: confluence
+confluence_group: "{{ confluence_user }}"
 
+confluence_config_enable_json: true
 confluence_config_db_cfg: "{{confluence_home}}/confluence.cfg.xml"
 confluence_config_db_host: localhost
 confluence_config_db_port: 5432
