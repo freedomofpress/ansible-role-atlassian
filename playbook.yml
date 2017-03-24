@@ -62,6 +62,8 @@
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
           - client_max_body_size 50M
 
+    - role: ansiblebit.oracle-java
+
     - role: pantarei.jira
       jira_archive: atlassian-jira-software-7.3.2.tar.gz
       jira_checksum: "sha256:590fd3c76373e487b9244e3127276f4c73d0a2df69507662242801ff9d6f46a3"
