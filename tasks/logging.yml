@@ -1,0 +1,49 @@
+---
+- name: Copy over json logging jar
+  copy:
+    src: "{{ atlassian_config_json_jar }}"
+    dest: "{{ item.jar_dir }}"
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+  when: "{{ item.enable }}"
+  with_items:
+    - jar_dir: "{{ jira_work }}/atlassian-jira/WEB-INF/lib/"
+      user: "{{ jira_user }}"
+      group: "{{ jira_group }}"
+      enable: "{{ jira_config_enable_json }}"
+    - jar_dir: "{{ confluence_work }}/confluence/WEB-INF/lib/"
+      user: "{{ confluence_user }}"
+      group: "{{ confluence_group }}"
+      enable: "{{ jira_config_enable_json }}"
+
+- name: Toggle on JSON logging in config - jira
+  lineinfile:
+    dest: "{{ jira_work }}/atlassian-jira/WEB-INF/classes/log4j.properties"
+    line: "{{ item.line | default(omit) }}"
+    regexp: "{{ item.reg }}"
+    state: "{{ item.state | default('present') }}"
+  when: "{{ jira_config_enable_json }}"
+  with_items:
+    - line: "log4j.appender.filelog.layout=net.logstash.log4j.JSONEventLayoutV1"
+      reg: '^log4j\.appender\.filelog\.layout='
+    - reg: '^log4j\.appender\.filelog\.layout\.ConversionPattern='
+      state: absent
+    - line: "log4j.appender.securitylog.layout=net.logstash.log4j.JSONEventLayoutV1"
+      reg: '^log4j\.appender\.securitylog\.layout='
+    - reg: '^log4j\.appender\.securitylog\.ConversionPattern='
+      state: absent
+  notify: restart jira
+
+- name: Toggle on JSON logging in connfig - confluence
+  lineinfile:
+    dest: "{{ confluence_work }}/confluence/WEB-INF/classes/log4j.properties"
+    line: "{{ item.line | default(omit) }}"
+    regexp: "{{ item.reg }}"
+    state: "{{ item.state | default('present') }}"
+  when: "{{ confluence_config_enable_json }}"
+  with_items:
+    - line: "log4j.appender.confluencelog.layout=net.logstash.log4j.JSONEventLayoutV1"
+      reg: '^log4j\.appender\.confluencelog\.layout='
+    - reg: '^log4j\.appender\.confluencelog\.layout\.ConversionPattern='
+      state: absent
+  notify: restart confluence
