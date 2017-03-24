@@ -2,6 +2,14 @@
 - name: Install Jira
   hosts: all
   become: yes
+  pre_tasks:
+    - name: Optionally copy over local tar files, saves bandwidth
+      copy:
+        src: "./{{ item }}"
+        dest: /tmp/
+      ignore_errors: true
+      with_items: ["{{ jira_archive }}", "{{ confluence_archive }}"]
+
   roles:
     - role: freedomofpress.openssl_node
 
@@ -68,3 +76,7 @@
             * JIRA @ https://{{ ansible_default_ipv4.address }}
             * Confluence @ https://{{ ansible_default_ipv4.address }}:4443
       tags: always
+  vars:
+    jira_archive: atlassian-jira-software-7.3.3.tar.gz
+    jira_checksum: "sha256:30beb999e42fb6efcd52c06c05465de5b025b5c29fd1860ccf2ab7b3c64111c3"
+    confluence_archive: atlassian-confluence-6.0.6.tar.gz

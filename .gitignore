@@ -1,4 +1,5 @@
 roles/
 .molecule
 .vagrant
+*tar.gz
 *.retry
