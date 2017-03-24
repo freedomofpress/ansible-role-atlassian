@@ -42,12 +42,22 @@
           - return 301 https://localhost:4443$request_uri
         encrypted:
           - listen 443 ssl
-          - location / { proxy_pass http://127.0.0.1:8080/; }
+          - server_name jira
+          - proxy_read_timeout 600
+          - location / {
+              proxy_pass http://127.0.0.1:8080/;
+              proxy_set_header    X-Forwarded-for $remote_addr;
+            }
           - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
         confluence:
-          - listen 4443 ssl
-          - location / { proxy_pass http://127.0.0.1:8090/; }
+          - listen 443 ssl
+          - server_name confluence
+          - proxy_read_timeout 600
+          - location / {
+              proxy_pass http://127.0.0.1:8090/;
+              proxy_set_header    X-Forwarded-for $remote_addr;
+            }
           - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
           - client_max_body_size 50M
@@ -66,15 +76,23 @@
       confluence_hash_salt: RxlcMApu9lqPrdJ
       confluence_pass: "RowGladeWhopShoeHitsBethel"
       confluence_user: confluence
+      confluence_scheme: https
+      confluence_proxy_name: jessie
 
     - role: ansible-role-jira
       tags: jira-config
   post_tasks:
+    - lineinfile:
+        dest: /etc/hosts
+        line: 127.0.0.1 localhost jessie jira confluence
+        regexp: '^127\.0\.0\.1'
+
     - debug:
         msg: |
           Connect to
-            * JIRA @ https://{{ ansible_default_ipv4.address }}
-            * Confluence @ https://{{ ansible_default_ipv4.address }}:4443
+            * JIRA @ https://jira
+            * Confluence @ https://confluence
+            Run this on host\:  "echo '{{ ansible_default_ipv4.address }} jira confluence' > /etc/hosts"
       tags: always
   vars:
     jira_archive: atlassian-jira-software-7.3.3.tar.gz
