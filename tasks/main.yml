@@ -9,3 +9,6 @@
   static: no
   when: atlassian_config_confluence
   tags: confluence
+
+- include: logging.yml
+  tags: json_logs
