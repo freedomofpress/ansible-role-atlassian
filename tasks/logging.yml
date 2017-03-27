@@ -22,6 +22,9 @@
       group: "{{ confluence_group }}"
       enable: "{{ jira_config_enable_json }}"
       jar: "{{ atlassian_config_json_jar_dep }}"
+  notify:
+    - "restart confluence{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"
+    - "restart jira{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"
 
 - name: Toggle on JSON logging in config - jira
   lineinfile:
@@ -39,7 +42,7 @@
       reg: '^log4j\.appender\.securitylog\.layout='
     - reg: '^log4j\.appender\.securitylog\.ConversionPattern='
       state: absent
-  notify: restart jira
+  notify: "restart jira{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"
 
 - name: Toggle on JSON logging in connfig - confluence
   lineinfile:
@@ -53,4 +56,4 @@
       reg: '^log4j\.appender\.confluencelog\.layout='
     - reg: '^log4j\.appender\.confluencelog\.layout\.ConversionPattern='
       state: absent
-  notify: restart confluence
+  notify: "restart confluence{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"

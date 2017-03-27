@@ -6,4 +6,4 @@
     mode: "640"
     owner: "{{ jira_user }}"
     group: "{{ jira_group }}"
-  notify: restart jira
+  notify: "restart jira{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"
