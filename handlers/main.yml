@@ -1,10 +1,34 @@
 ---
+- name: "restart jira (systemd)"
+  systemd:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+    daemon_reload: yes
+  with_items:
+    - { name: "jira", state: "restarted", enabled: "yes" }
+
 - name: restart jira
   service:
-    name: jira
-    state: restarted
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items:
+    - { name: "jira", state: "restarted", enabled: "yes" }
+
+- name: "restart confluence (systemd)"
+  systemd:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+    daemon_reload: yes
+  with_items:
+    - { name: "confluence", state: "restarted", enabled: "yes" }
 
 - name: restart confluence
   service:
-    name: confluence
-    state: restarted
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items:
+    - { name: "confluence", state: "restarted", enabled: "yes" }

@@ -43,4 +43,4 @@
     path: "{{ confluence_config_db_cfg }}"
   register: detect_file_postchange_result
   changed_when: 'detect_file_postchange_result.stat.checksum != detect_file_prechange_result.stat.checksum'
-  notify: restart confluence
+  notify: "restart confluence{{ ' (systemd)' if ansible_service_mgr == 'systemd' else '' }}"
