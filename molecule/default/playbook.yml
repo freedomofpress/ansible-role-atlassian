@@ -2,6 +2,14 @@
 - name: Install Jira
   hosts: all
   become: yes
+  pre_tasks:
+    - name: Optionally copy over local tar files, saves bandwidth
+      copy:
+        src: "./{{ item }}"
+        dest: /tmp/
+      ignore_errors: true
+      with_items: ["{{ jira_archive }}", "{{ confluence_archive }}"]
+
   roles:
     - role: freedomofpress.openssl_node
 
@@ -34,19 +42,29 @@
           - return 301 https://localhost:4443$request_uri
         encrypted:
           - listen 443 ssl
-          - location / { proxy_pass http://127.0.0.1:8080/; }
+          - server_name jira
+          - proxy_read_timeout 600
+          - location / {
+              proxy_pass http://127.0.0.1:8080/;
+              proxy_set_header    X-Forwarded-for $remote_addr;
+            }
           - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
         confluence:
-          - listen 4443 ssl
-          - location / { proxy_pass http://127.0.0.1:8090/; }
+          - listen 443 ssl
+          - server_name confluence
+          - proxy_read_timeout 600
+          - location / {
+              proxy_pass http://127.0.0.1:8090/;
+              proxy_set_header    X-Forwarded-for $remote_addr;
+            }
           - ssl_certificate /etc/ssl/certs/{{ansible_fqdn}}.pem
           - ssl_certificate_key /etc/ssl/private/{{ansible_fqdn}}-key.pem
           - client_max_body_size 50M
 
+    - role: ansiblebit.oracle-java
+
     - role: pantarei.jira
-      jira_archive: atlassian-jira-software-7.3.2.tar.gz
-      jira_checksum: "sha256:590fd3c76373e487b9244e3127276f4c73d0a2df69507662242801ff9d6f46a3"
       jira_hash_salt: 2A5VpF2Uza
       jira_pass: "34thAromaCot555AlumAgave"
       jira_user: jira
@@ -58,13 +76,25 @@
       confluence_hash_salt: RxlcMApu9lqPrdJ
       confluence_pass: "RowGladeWhopShoeHitsBethel"
       confluence_user: confluence
+      confluence_scheme: https
+      confluence_proxy_name: jessie
 
     - role: ansible-role-jira
       tags: jira-config
   post_tasks:
+    - lineinfile:
+        dest: /etc/hosts
+        line: 127.0.0.1 localhost jessie jira confluence
+        regexp: '^127\.0\.0\.1'
+
     - debug:
         msg: |
           Connect to
-            * JIRA @ https://{{ ansible_default_ipv4.address }}
-            * Confluence @ https://{{ ansible_default_ipv4.address }}:4443
+            * JIRA @ https://jira
+            * Confluence @ https://confluence
+            Run this on host\:  "echo '{{ ansible_default_ipv4.address }} jira confluence' > /etc/hosts"
       tags: always
+  vars:
+    jira_archive: atlassian-jira-software-7.3.3.tar.gz
+    jira_checksum: "sha256:30beb999e42fb6efcd52c06c05465de5b025b5c29fd1860ccf2ab7b3c64111c3"
+    confluence_archive: atlassian-confluence-6.0.6.tar.gz
