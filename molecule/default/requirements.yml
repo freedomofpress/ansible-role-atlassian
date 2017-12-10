@@ -1,3 +1,4 @@
+---
 - role: ansiblebit.oracle-java
   src: git@github.com:ansiblebit/oracle-java.git
 
